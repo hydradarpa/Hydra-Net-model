@@ -1,10 +1,10 @@
 
 clear;
-close all;
+%close all;
 
 % Integration time and time step
 N=1000;
-dt=0.05;
+dt=0.001;
 
 % cortex-matched model, Brette-Gerstner 2005
 c=281; 
@@ -25,7 +25,7 @@ v=zeros(1,round(N/dt));
 w=zeros(1,round(N/dt));
 
 % stimuli
-stimulus=500; % pA
+stimulus=650; % pA
 input=stimulus*ones(1,round(N/dt));
 
 % initial conditions
