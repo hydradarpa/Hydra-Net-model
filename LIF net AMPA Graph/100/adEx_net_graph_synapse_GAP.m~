@@ -3,7 +3,7 @@ clear;       % remove previous varibles
 %close all;
 
 T=1100;        % total time, mS
-dt=0.001;     % time step, ms
+dt=0.1;     % time step, ms
 
 %time=(1:1:(T/dt)).*dt;      % TIME VECTOR
 Df=1/dt;            % Delta function approximation
@@ -46,18 +46,18 @@ repr=round(N/2);             % number of representative neuron
 
 %% NEURON PARAMETERS
 % cortical neurons, Brette-Gerstner 2005
-c=281; 
-gl=30;
-el=-70.6; 
-vt=-50.4;
-delta=2; 
-vreset=-70.6;
-a=4;
-tauw=144;
-b=80;
+c(1:N)=281; 
+gl(1:N)=30;
+el(1:N)=-70.6; 
+vt(1:N)=-50.4;
+delta(1:N)=2; 
+vreset(1:N)=-70.6;
+a(1:N)=4;
+tauw(1:N)=144;
+b(1:N)=80;
 
 % bursting subpopulation
-%vreset(1:10)=-70.6;
+vreset(1:10)=-70.6;
 
 % spike mark and number of spikes
 vspike=10;
@@ -141,29 +141,25 @@ end
 
 % Synaptic variable
 I_EE=(-I_EE/tau_EE + Df.*sum(S_EE(:,fired),2) )*dt + I_EE;
-I_EE=zeros(N,1);
 
 % GAP junciton currents
 I_GAP=g_GAP*(m.*V'-sum(repmat(V',1,N).*S_EE,1)');
-I_GAP=zeros(N,1);
+
 
 % Voltage
 V=(dt./c).*(-gl.*(V-el)+gl.*delta.*exp((V-vt)./delta)-W +IN +I_EE'+I_GAP') + V;
 
-
-% FIRINGS Proccessing, fired now neurons
+% FIRINGS Proccessing, avoid W jumps!
 fired=[];
 fired=find(V>=vspike);
 
-if isempty(fired)==0
 % reset condition       
-    V(fired)=vreset;
-    W(fired)=W(fired)+b;   %ERROR !!! % W updates gives weird results! 
-end
-
-
+if isempty(fired)==0
+    V(fired)=vreset(fired);
+    W(fired)=W(fired)+b(fired);
+else
 W=(dt./tauw).*(a.*(V-el)-W) + W;
-
+end
 
 
 % Representative cell
@@ -171,14 +167,14 @@ V_repr(t)=V(repr);
 W_repr(t)=W(repr);
 I_repr_ext(t)=IN(repr);
 I_repr_EE(t)=I_EE(repr);
-
-
-if V_repr(t)>=vspike
-    V_repr(t-1)=10;     % add stick to the repr neuron
+% add stick to the repr neuron
+if V_repr(t)>=-40
+    V_repr(t-1)=10;
     V_repr(t)=vreset(repr);
 end
 
 
+% Record the spikes
 t_fired(1:length(fired))=t;
 
 if isrow(fired)==0
@@ -188,13 +184,11 @@ end
 if isrow(t_fired)==0
      t_fired=t_fired';
 end
-    
-spikes=horzcat(t_fired',fired');   
-firings=vertcat(firings,spikes);
 
+spikes=horzcat(t_fired',fired');
+firings=vertcat(firings,spikes);
 t_fired=[];
 spikes=[];
-
 fired_delta(:)=0;           % vector of current delta functions of all neurons
 fired_delta(fired)=Df;      
 
@@ -218,10 +212,11 @@ box off;
 
 subplot(2,2,2);
 plot((1:t)*dt,V_repr,(1:t)*dt,W_repr);
-ylabel('Voltage (mV)');
+ylabel('mV and pA');
 set(gca,'FontSize',20);             % set the axis with big font
 title('Representative neuron');
 set(gca,'FontSize',20);             % set the axis with big font
+legend('Voltage (mV)', 'W (pA)')
 box off;
 
 subplot(2,2,3);

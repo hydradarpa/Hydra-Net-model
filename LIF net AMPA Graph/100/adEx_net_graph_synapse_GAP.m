@@ -2,7 +2,7 @@
 clear;       % remove previous varibles
 %close all;
 
-T=1100;        % total time, mS
+T=5000;        % total time, mS
 dt=0.1;     % time step, ms
 
 %time=(1:1:(T/dt)).*dt;      % TIME VECTOR
@@ -20,10 +20,13 @@ N=100;        % Number of neurons
 %%
 
 %% CONNECTIVITY
-gEE_mean=0.1;  % mA/cm^2 (current synapses)  # 33.35
+gEE_mean=5;  % mA/cm^2 (current synapses)  # 33.35
+gEE_sigma=5;
+
 tau_EE=2;      % ms, AMPA 5.4
 
 load('Adjacency_20X5.mat');
+
 
 S_EE=A_tube*gEE_mean;    % connectivity matrix
 
@@ -47,7 +50,7 @@ repr=round(N/2);             % number of representative neuron
 %% NEURON PARAMETERS
 % cortical neurons, Brette-Gerstner 2005
 c(1:N)=281; 
-gl(1:N)=30;
+gl(1:N)=random('Normal',30,5,1,N); % heterogenous population
 el(1:N)=-70.6; 
 vt(1:N)=-50.4;
 delta(1:N)=2; 
@@ -56,15 +59,19 @@ a(1:N)=4;
 tauw(1:N)=144;
 b(1:N)=80;
 
-% bursting subpopulation
-%vreset(1:10)=-70.6;
+% bursting subpopulation, oscillators are heterogenous
+burster_idx=randperm(100,10);
+vreset(burster_idx)=-47.2; % random cells
+tauw(burster_idx)=random('Normal',500,50,1,length(burster_idx));
+%}
 
 % spike mark and number of spikes
 vspike=10;
 %%
 
 %% STIMULATION
-IN(1:N)=650;          % mA/cm^2
+IN(1:N)=0;              % mA/cm^2 to all cells
+IN(burster_idx)=800;    % mA/cm^2
 
 % stimulated neuron
 stim_1=50;                % central neuron
@@ -157,10 +164,9 @@ fired=find(V>=vspike);
 if isempty(fired)==0
     V(fired)=vreset(fired);
     W(fired)=W(fired)+b(fired);
-else
-W=(dt./tauw).*(a.*(V-el)-W) + W;
-end
-
+    else
+    W=(dt./tauw).*(a.*(V-el)-W) + W;
+    end
 
 % Representative cell
 V_repr(t)=V(repr);

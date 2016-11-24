@@ -3,7 +3,7 @@ clear;
 %close all;
 
 % Integration time and time step
-N=1000;
+N=500;
 dt=0.05;
 
 % cortex-matched model, Brette-Touboul 2008
@@ -13,7 +13,7 @@ el=-70.6;
 vt=-50.4;
 delta=2; 
 vreset=-47.2;
-a=4; tauw=500; b=80;
+a=4; tauw=500; b=80;      % time constant to determine the rhythm
 % spike mark and number of spikes
 vspike=0;
 nsp=0;
@@ -23,7 +23,7 @@ v=zeros(1,round(N/dt));
 w=zeros(1,round(N/dt));
 
 % stimuli
-stimulus=800; % pA
+stimulus=0; % pA
 input=stimulus*ones(1,round(N/dt));
 
 % initial conditions
