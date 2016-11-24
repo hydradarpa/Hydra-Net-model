@@ -2,7 +2,7 @@
 clear;       % remove previous varibles
 %close all;
 
-T=10000;        % total time, mS
+T=5000;        % total time, mS
 dt=0.1;     % time step, ms
 
 %time=(1:1:(T/dt)).*dt;      % TIME VECTOR
