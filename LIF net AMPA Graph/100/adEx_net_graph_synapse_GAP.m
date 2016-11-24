@@ -2,7 +2,7 @@
 clear;       % remove previous varibles
 %close all;
 
-T=5000;        % total time, mS
+T=10000;        % total time, mS
 dt=0.1;     % time step, ms
 
 %time=(1:1:(T/dt)).*dt;      % TIME VECTOR
@@ -20,15 +20,18 @@ N=100;        % Number of neurons
 %%
 
 %% CONNECTIVITY
-gEE_mean=5;  % mA/cm^2 (current synapses)  # 33.35
-gEE_sigma=5;
+%
+% connection strength
+gEE_mean=600;  % mA/cm^2 (current synapses)  # 33.35
+gEE_sigma=200;
 
-tau_EE=2;      % ms, AMPA 5.4
+% synaptic timescale
+tau_EE=5.4;      % ms, AMPA 5.4
 
 load('Adjacency_20X5.mat');
 
-
-S_EE=A_tube*gEE_mean;    % connectivity matrix
+S_EE=random('Normal',gEE_mean,gEE_sigma,N,N);
+S_EE=A_tube.*S_EE;    % connectivity matrix
 
 % GAP junctions, the same location as synapses, PROBLEM WITH IMPLEMENTATION
 g_GAP=0;      % 0.0001
@@ -45,6 +48,7 @@ m=sum(m,2);
 
 % Representative cell
 repr=round(N/2);             % number of representative neuron
+%}
 %%
 
 %% NEURON PARAMETERS
@@ -60,9 +64,9 @@ tauw(1:N)=144;
 b(1:N)=80;
 
 % bursting subpopulation, oscillators are heterogenous
-burster_idx=randperm(100,10);
-vreset(burster_idx)=-47.2; % random cells
-tauw(burster_idx)=random('Normal',500,50,1,length(burster_idx));
+burster_idx=randperm(N,10);                 % cluster of bursters in the network
+vreset(burster_idx)=-47.2; 
+tauw(burster_idx)=random('Normal',800,200,1,length(burster_idx));
 %}
 
 % spike mark and number of spikes
@@ -70,8 +74,8 @@ vspike=10;
 %%
 
 %% STIMULATION
-IN(1:N)=0;              % mA/cm^2 to all cells
-IN(burster_idx)=800;    % mA/cm^2
+IN(1:N)=400;              % mA/cm^2 to all cells
+IN(burster_idx)=600;    % mA/cm^2
 
 % stimulated neuron
 stim_1=50;                % central neuron
@@ -164,9 +168,9 @@ fired=find(V>=vspike);
 if isempty(fired)==0
     V(fired)=vreset(fired);
     W(fired)=W(fired)+b(fired);
-    else
+else
     W=(dt./tauw).*(a.*(V-el)-W) + W;
-    end
+end
 
 % Representative cell
 V_repr(t)=V(repr);
@@ -217,12 +221,13 @@ set(gca,'FontSize',20);             % set the axis with big font
 box off;
 
 subplot(2,2,2);
-plot((1:t)*dt,V_repr,(1:t)*dt,W_repr);
+%plot((1:t)*dt,V_repr,(1:t)*dt,W_repr);
+% legend('Voltage (mV)', 'W (pA)')
+plot((1:t)*dt,V_repr);
 ylabel('mV and pA');
 set(gca,'FontSize',20);             % set the axis with big font
 title('Representative neuron');
 set(gca,'FontSize',20);             % set the axis with big font
-legend('Voltage (mV)', 'W (pA)')
 box off;
 
 subplot(2,2,3);

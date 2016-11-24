@@ -7,12 +7,12 @@ A_graph=graph(A);
 
 %h=plot(A_graph,'Layout','force')  % force graph
 
-[X,Y]=meshgrid(1:13,1:52);        
-x=reshape(X,[1,676]);
-y=reshape(Y,[1,676]);
+[X,Y]=meshgrid(1:20,1:5);        
+x=reshape(X,[1,100]);
+y=reshape(Y,[1,100]);
 h=plot(A_graph,'Xdata',x,'Ydata',y);    %handle for the graph plot
-xlim([-6 20]);
-ylim([0 53]);
+%xlim([-6 20]);
+%ylim([0 53]);
 
 box off
 
@@ -116,13 +116,13 @@ end
 figure('units','normalized','outerposition',[0 0 0.7 0.7]); % show figure window
 A_graph=graph(A);
 
-subplot(1,2,1)
-plot(firings(:,1)*dt,firings(:,2),'.','MarkerSize',10,'Color','r');
+subplot(1,2,2)
+plot(firings(:,1)*dt,firings(:,2),'.','MarkerSize',10,'Color','b');
 hold on;
-idx_stim_1 = find(ismember(firings(:,2), stim_1));         % finds index of stim_1 in firings array
-plot(firings(idx_stim_1,1)*dt,firings(idx_stim_1,2),'.','MarkerSize',10,'Color','g');
+idx_stim_1 = find(ismember(firings(:,2), burster_idx));         % finds index of stim_1 in firings array
+plot(firings(idx_stim_1,1)*dt,firings(idx_stim_1,2),'.','MarkerSize',10,'Color','r');
 
-legend('Response','Stimulated');
+legend('Excitable','Bursting');
 
 
 ylabel('Cell index');
@@ -134,23 +134,24 @@ set(gca,'FontSize',20);             % set the axis with big font
 box off;
 
 
-subplot(1,2,2)
+subplot(1,2,1)
 
 %h=plot(A_graph,'Layout','force')  % forced graph
 
 %
-[X,Y]=meshgrid(1:13,1:52);          % plane graph
-x=reshape(X,[1,676]);
-y=reshape(Y,[1,676]);
+[X,Y]=meshgrid(1:20,1:5);          % plane graph
+x=reshape(X,[1,100]);
+y=reshape(Y,[1,100]);
 h=plot(A_graph,'Xdata',x,'Ydata',y);  %handle for the graph plot
 %}
 
 box off
-highlight(h,firings(:,2),'Markersize',7,'Nodecolor','r')    % firing ensemble
-highlight(h,stim_1,'Markersize',7,'Nodecolor','g')          % stimulated cells
-title('Network 13x53 neurons')
-xlim([-6 20]);
-ylim([0 53]);
+highlight(h,firings(:,2),'Markersize',7,'Nodecolor','b')    % firing ensemble
+highlight(h,burster_idx,'Markersize',7,'Nodecolor','r')          % stimulated cells
+title('Network structure')
+legend('Excitable','Bursting');
+%xlim([-6 20]);
+%ylim([0 53]);
 set(gca,'Fontsize',20)
 
 %%

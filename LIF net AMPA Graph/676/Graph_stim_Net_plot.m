@@ -139,9 +139,9 @@ subplot(1,2,2)
 %h=plot(A_graph,'Layout','force')  % forced graph
 
 %
-[X,Y]=meshgrid(1:13,1:52);          % plane graph
-x=reshape(X,[1,676]);
-y=reshape(Y,[1,676]);
+[X,Y]=meshgrid(1:20,1:5);          % plane graph
+x=reshape(X,[1,100]);
+y=reshape(Y,[1,100]);
 h=plot(A_graph,'Xdata',x,'Ydata',y);  %handle for the graph plot
 %}
 
