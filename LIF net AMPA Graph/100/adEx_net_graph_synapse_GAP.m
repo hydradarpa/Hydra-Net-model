@@ -1,8 +1,8 @@
 %% INTEGRATION PARAMETERS
-clear;       % remove previous varibles
+%clear;       % remove previous varibles
 %close all;
 
-T=5000;        % total time, mS
+T=10100;        % total time, mS
 dt=0.1;     % time step, ms
 
 %time=(1:1:(T/dt)).*dt;      % TIME VECTOR
@@ -12,15 +12,15 @@ Tframe=0;    % movie
 dTframe=100; % ms
 frame=100;
 
-figure('units','normalized','outerposition',[0 0 0.8 0.8]); % show figure window
 %%
 
+%{
 %% NETWORK PARAMETERS
 N=100;        % Number of neurons
 %%
 
 %% CONNECTIVITY
-%
+%{
 % connection strength
 gEE_mean=600;  % mA/cm^2 (current synapses)  # 33.35
 gEE_sigma=200;
@@ -36,6 +36,7 @@ S_EE=A_tube.*S_EE;    % connectivity matrix
 % GAP junctions, the same location as synapses, PROBLEM WITH IMPLEMENTATION
 g_GAP=0;      % 0.0001
 
+
 l=zeros(N,4);
 
 for i=1:1:N 
@@ -48,7 +49,7 @@ m=sum(m,2);
 
 % Representative cell
 repr=round(N/2);             % number of representative neuron
-%}
+
 %%
 
 %% NEURON PARAMETERS
@@ -71,17 +72,18 @@ tauw(burster_idx)=random('Normal',800,200,1,length(burster_idx));
 
 % spike mark and number of spikes
 vspike=10;
+%}
 %%
 
 %% STIMULATION
-IN(1:N)=400;              % mA/cm^2 to all cells
-IN(burster_idx)=600;    % mA/cm^2
+IN(1:N)=400;                 % mA/cm^2 to all cells
+IN(burster_idx)=600;         % mA/cm^2
 
 % stimulated neuron
-stim_1=50;                % central neuron
+stim_1=randperm(100,20);     % random cells
 
-ts1_start=0;        % start of first stimuli
-ts1_end=0;          % end of first stimuli
+ts1_start=4000;                 % start of first stimuli
+ts1_end=4100;                   % end of first stimuli
 
 %%
 
@@ -103,16 +105,20 @@ V_sp=50*ones(N,1);    % vector of times of elements that did not spike
 fired_delta(1:N)=0;   % vector of fired delta-function
 %%
 
+
+
 %% TIME INTEGRATION LOOP
+figure('units','normalized','outerposition',[0 0 0.8 0.8]); % show figure window
+
 for t=1:1:round(T/dt)
 
-% Stimulation
-%{
+% Stimulation: during the stimulation neurons recieve an additional input
+%
 if t*dt>ts1_start
     if t*dt<ts1_end
-       IN(stim_1)=800;
+       IN(stim_1)=400+400;
     else
-        IN(stim_1)=0;
+        IN(stim_1)=400;
     end
 end
 %}
@@ -216,7 +222,7 @@ end
 ylabel('Cell index');
 ylim([0 N]);
 set(gca,'FontSize',20);             % set the axis with big font
-title(sprintf('LIF population, T=%d ms',round(Tframe)));
+title(sprintf('adEx population, T=%d ms',round(Tframe)));
 set(gca,'FontSize',20);             % set the axis with big font
 box off;
 
