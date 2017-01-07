@@ -7,6 +7,7 @@ function A = M_FullTube_smartcut(n,m,p,trials)
 % ADD the connections to fit the probability distribution
 % p - vector of the outcomes consisting of probabilites
 
+
 function ind = graph_element(x,y,m)
 %UNTITLED2 Summary of this function goes here
 %   returns the number of an element on the graph, numbrering: 
