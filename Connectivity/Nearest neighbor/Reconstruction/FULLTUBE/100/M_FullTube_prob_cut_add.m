@@ -4,7 +4,7 @@ function A = M_FullTube_prob_cut_add(n,m,p,trials)
 % columns
 
 % CUTS the connections to fit the probability distrubution p.
-% ADD the connections to fit the probability distribution
+% ADD the connections to restore the impaired the probability distribution
 % p - vector of the outcomes consisting of probabilites
 
 
@@ -22,7 +22,7 @@ A=zeros(m*n,m*n); % size of adjacency matrix
 
 
 
-for x=1:1:m         % loop over all all graph edges
+for x=1:1:m         % loop over all all graph edges, generate tube-like adjacency matrix
     for y=1:1:n
                          
     % tube border conditions    
@@ -152,7 +152,7 @@ end
 
 %}
 
-B_graph=graph(B);       % create the graph out of adjacency matrix
+B_graph=graph(B);       % create the graph out of the adjacency matrix
 
 
 if max(conncomp(B_graph))==1    
